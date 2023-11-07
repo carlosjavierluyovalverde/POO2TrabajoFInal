@@ -1,0 +1,65 @@
+Crear una base de datos contenedor (CDB) de nombre WAREHOUSE.
+Agregar al CDB “WAREHOUSE” un nuevo PDB de nombre “pdbCovid”.
+Dicho PDB deberá tener las mejores prácticas de configuración de una base de datos Oracle respecto a: ControlFiles, RedoLogs, TableSpaces y Datafiles.
+Usando “Oracle SQL Developer Data Modeler”, establecer conexión a la base de datos “WAREHOUSE” del servidor “AG_ORA19C”
+
+CONTROL FILES
+
+alter system set control_files =
+'C:\APP\ADMINISTRADOR\ORADATA\WAREHOUSE\CONTROL01.CTL',
+'C:\APP\ADMINISTRADOR\FAST_RECOVERY_AREA\WAREHOUSE\CONTROL02.CTL',
+'D:\CONTROLFILED\CONTROL03D.CTL',
+'D:\CONTROLFILED\CONTROL04D.CTL',
+'E:\CONTROLFILEE\CONTROL05E.CTL',
+'E:\CONTROLFILEE\CONTROL06E.CTL'
+scope=SPFILE;
+
+
+col name format a15
+col value format a60
+select name,value from v$parameter where name='control_files';
+
+
+redologs
+
+col member format a50
+select group#,member from v$logfile;
+
+SELECT log_mode FROM v$database;
+
+SHUTDOWN IMMEDIATE;
+STARTUP MOUNT;
+ALTER DATABASE ARCHIVELOG;
+ALTER DATABASE OPEN;
+
+
+ALTER DATABASE ADD LOGFILE MEMBER
+'C:\APP\ADMINISTRADOR\ORADATA\WAREHOUSE\REDO01b.LOG' to group 1,
+'D:\REDOLOGD\redo02b.log' to group 2,
+'D:\REDOLOGD\redo02c.log' to group 2,
+'E:\REDOLOGE\redo03b.log' to group 3,
+'E:\REDOLOGE\redo03c.log' to group 3;
+
+ALTER SYSTEM SWITCH LOGFILE;
+
+
+DATAFILES 
+
+
+CREATE TABLESPACE DATOS
+DATAFILE 'D:\TABLESPACES\DATOS\datos01.dbf'
+SIZE 1G
+AUTOEXTEND ON
+NEXT 1G MAXSIZE 20G;
+
+
+
+CREATE TABLESPACE funciones
+DATAFILE 'D:\TABLESPACES\FUNCIONES\funciones01.dbf' 
+SIZE 1G
+AUTOEXTEND ON 
+NEXT 1G MAXSIZE 10G;
+
+
+
+
